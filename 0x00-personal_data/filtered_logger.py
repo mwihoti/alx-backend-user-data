@@ -9,7 +9,11 @@ import re
 import os
 import mysql.connector
 
-
+patterns = {
+    'extract': lambda fields, separator: r'(?P<field>{}=[^{}]*)(?={})'
+    .format('|'.join(fields), separator, separator),
+    'replace': lambda redaction: r'\g<field>={}'.format(redaction),
+}
 PII_FIELDS = ("name", "email", "phone", "ssn", "password")
 
 
@@ -19,16 +23,9 @@ def filter_datum(fields: List[str], redaction: str,
     def filter_datum  Obfuscates specified fields in a log message.
     """
     # Create a regex pattern to match each field
-    pattern = r';\s*(?P<field>{})=[^{}]*'.format('|'.join(fields), separator)
-
-    def replace(match: re.Match) -> str:
-        """
-        Define the replacement function for the regex sub
-        """
-        field = match.group('field')
-        return f"{separator}{field}={redaction}"
-    # Perform the substitution using the regex pattern and replacement function
-    return re.sub(pattern, replace, message)
+    extract = patterns["extract"](fields, separator)
+    replace = patterns["replace"](redaction)
+    return re.sub(extract, replace, message)
 
 
 def get_logger() -> logging.Logger:
@@ -55,6 +52,7 @@ def get_db() -> mysql.connector.connection.MySQLConnection:
     db_pwd = os.getenv('PERSONAL_DATA_DB_PASSWORD', '')
     connection = mysql.connector.connect(
         host=db_host,
+        port=3306,
         user=db_user,
         password=db_pwd,
         database=db_name,
