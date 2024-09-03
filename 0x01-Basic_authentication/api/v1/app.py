@@ -20,7 +20,7 @@ AUTH_TYPE = getenv("AUTH_TYPE", 'auth')
 if AUTH_TYPE == 'auth':
     auth = Auth()   
 if AUTH_TYPE == 'basic_auth':
-    auth == BasicAuth()
+    auth = BasicAuth()
 
 
 @app.before_request
