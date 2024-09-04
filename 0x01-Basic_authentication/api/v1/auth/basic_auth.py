@@ -86,7 +86,26 @@ class BasicAuth:
         Retrieve current user
         """
         auth_header = self.authorization_header(request)
-        b64_auth_token = self.extract_base64_authorization_header(auth_header)
-        auth_token = self.decode_base64_authorization_header(b64_auth_token)
-        email, password = self.extract_user_credentials(auth_token)
-        return self.user_object_from_credentials(email, password)
+        if auth_header is None:
+            return None
+        # Extract the Base64 part of the Authorization header
+        base64_auth_header = self.extract_base64_authorization_header(
+                auth_header)
+        if base64_auth_header is None:
+            return None
+
+        # Decode the Base64 string to get the email:password
+        decoded_auth_header = self.decode_base64_authorization_header(
+                base64_auth_header)
+        if decoded_auth_header is None:
+            return None
+
+        # Extract the email and password from the decoded string
+        user_email, user_pwd = self.extract_user_credentials(
+                decoded_auth_header)
+        if user_email is None or user_pwd is None:
+            return None
+
+        # Retrieve the User instance based on the email and password
+        user = self.user_object_from_credentials(user_email, user_pwd)
+        return user
