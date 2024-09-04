@@ -5,9 +5,10 @@ Module BasicAuth
 import base64
 from typing import TypeVar
 from models.user import User
+from api.v1.auth.auth import Auth
 
 
-class BasicAuth:
+class BasicAuth(Auth):
     """
     BasicAuth class
     """
