@@ -5,8 +5,8 @@ Module SessionAuth
 import base64
 from typing import TypeVar
 from models.user import User
-from api.v1.auth.auth import Auth
-import uuid
+from .auth import Auth
+from uuid import uuid4
 
 
 class SessionAuth(Auth):
@@ -22,7 +22,7 @@ class SessionAuth(Auth):
         if user_id is None or not isinstance(user_id, str):
             return None
 
-        sessionID = str(uuid.uuid4())
+        sessionID = str(uuid4())
         self.user_id_by_session_id[sessionID] = user_id
         return sessionID
 
