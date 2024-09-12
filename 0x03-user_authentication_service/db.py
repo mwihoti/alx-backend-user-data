@@ -49,7 +49,6 @@ class DB:
         """
         Find user by any field
         """
-
         session = self._session
         try:
             user = session.query(User).filter_by(**kwargs).one()
@@ -70,4 +69,4 @@ class DB:
         try:
             session.commit()
         except InvalidRequestError:
-             raise ValueError()
+            raise ValueError()
