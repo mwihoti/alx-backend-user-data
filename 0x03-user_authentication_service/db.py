@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""DB module
+"""
+DB module sqlalchemy
 """
 from sqlalchemy import create_engine, tuple_
 from sqlalchemy.ext.declarative import declarative_base
