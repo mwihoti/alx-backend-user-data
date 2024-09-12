@@ -17,7 +17,7 @@ def _hash_password(password: str) -> bytes:
     return hash
 
 
-def _generste_uuid() -> str:
+def _generate_uuid() -> str:
     """
     Generate UUID
     """
