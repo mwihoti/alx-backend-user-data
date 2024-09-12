@@ -2,7 +2,7 @@
 """
 Flask application
 """
-from flask import Flask, jsonify, request, abort
+from flask import Flask, jsonify, request, abort, make_response
 from auth import Auth
 
 
@@ -41,7 +41,9 @@ def login() -> str:
     password = request.form.get("password")
     if AUTH.valid_login(email, password):
         session_id = AUTH.create_session(email)
-        return jsonify({"email": email, "message": "logged in"})
+        response = make_response(jsonify({"email": email, "message": "logged in"}))
+        response.set_cookie("session_id", session_id)
+        return response
     return abort(401)
 
 
