@@ -36,8 +36,8 @@ class DB:
         """
         Add user to DB
         """
+        NewUser = User(email=email, hashed_password=hashed_password)
         try:
-            NewUser = User(email=email, hashed_password=hashed_password)
             self._session.add(NewUser)
             self._session.commit()
         except Exception:
@@ -50,16 +50,24 @@ class DB:
         Find user by any field
         """
 
-        fields, values = [], []
-        for key, value in kwargs.items():
-            if hasattr(User, key):
-                fields.append(getattr(User, key))
-                values.append(value)
-            else:
-                raise InvalidRequestError()
-        result = self._session.query(User).filter(
-            tuple_(*fields).in_([tuple(values)])
-        ).first()
-        if result is None:
+        session = self._session
+        try:
+            user = session.query(User).filter_by(**kwargs).one()
+        except NoResultFound:
             raise NoResultFound()
-        return result
+        except InvalidRequestError:
+            raise InvalidRequestError()
+        return user
+
+    def update_user(self, user_id: int, **kwargs) -> None:
+        """
+        Update user
+        """
+        session = self._session
+        user = self.find_user_by(id=user_id)
+        for key, value in kwargs.items():
+            setattr(user, key, value)
+        try:
+            session.commit()
+        except InvalidRequestError:
+             raise ValueError()
